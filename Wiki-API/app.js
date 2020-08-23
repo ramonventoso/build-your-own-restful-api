@@ -68,6 +68,64 @@ app.route('/articles')
     })
 })
 
+app.route('/articles/:articleTitle')
+.get(function(request, response) {
+    Article.findOne( {title: request.params.articleTitle} ,function(err, article) {
+        if (!err) {
+            if (article) {
+                response.send(article)
+            }
+            else {
+                response.send('No article matching that title was found')
+            }
+        }
+        else {
+            response.send(err)
+        }
+    })    
+})
+.put(function(request, response) {
+    Article.updateOne( 
+        {title: request.params.articleTitle}, 
+        {title: request.body.title, content: request.body.content}, 
+        {overrite: true}, 
+        function(err) {
+        if (!err) {
+            response.send('Successfully updated selected article')
+        }
+        else {
+            response.send(err)
+        }
+    })
+})
+.patch(function(request, response) {
+    Article.updateOne(
+        {title: request.params.articleTitle}, 
+        {$set: request.body}, 
+        function(err) {
+            if (!err) {
+                response.send('Successfully updated selected article')
+            }
+            else {
+                response.send(err)                
+            }
+        }
+    )
+})
+.delete(function(request, response) {
+    Article.deleteOne(
+        {title: request.params.articleTitle}, 
+        function(err) {
+            if (!err) {
+                response.send('Successfully deleted selected article')
+            }
+            else {
+                response.send(err)
+            }
+        }
+    )
+})
+
 app.listen(3000, function() {
     console.log('server running on port 3000')
 })
